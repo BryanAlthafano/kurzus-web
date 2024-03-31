@@ -3,7 +3,9 @@ import { api } from 'src/boot/axios'
 
 export const useAuthStore = defineStore('Auth', {
   state: () => {
-    userData: null
+    return {
+      userData: null
+    }
   },
   actions: {
     doLogin ({ commit }, credential) {
@@ -25,7 +27,7 @@ export const useAuthStore = defineStore('Auth', {
     }
   },
   persist: {
-    storage: persistedState.localStorage
+    storage: localStorage
   }
 })
 

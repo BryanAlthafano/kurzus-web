@@ -16,11 +16,10 @@
     </div>
     <div class="row justify-center q-pa-md q-mt-xl">
       <iframe
-        style="border-radius: 4px"
+        style="border-radius: 4px; aspect-ratio: 16/9"
         type="text/html"
-        width="600"
-        height="300"
-        src="http://www.youtube.com/embed/jia3fhBQ8qI"
+        :width="isSmallScreen ? '100%' : '600'"
+        src="https://www.youtube.com/embed/jia3fhBQ8qI"
         frameborder="0"
       />
     </div>

@@ -28,7 +28,7 @@
               :style="`color: ${
                 $route.name === 'CoursePage' ? '#8D7474' : '#222831'
               }`"
-              to="/"
+              to="/course"
             >
               Course
             </RouterLink>
@@ -37,14 +37,19 @@
               :style="`color: ${
                 $route.name === 'VideoCoursePage' ? '#8D7474' : '#222831'
               }`"
-              to="/"
+              to="/video-course"
             >
               Video Course
             </RouterLink>
           </div>
         </div>
         <div class="self-center">
-          <q-img no-spinner src="/icons/logo-kurzus.png" style="width: 40px" />
+          <q-img
+            no-spinner
+            :src="`${url}icons/logokurzus.png`"
+            alt="logokurzus"
+            style="width: 40px"
+          />
         </div>
         <div class="self-center">
           <div v-if="isLoggedIn">
@@ -132,6 +137,9 @@ export default {
     }
   },
   computed: {
+    url () {
+      return window.location.href.split('#')[0]
+    },
     isLoggedIn () {
       return false
     },

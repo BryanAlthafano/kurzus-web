@@ -15,7 +15,8 @@
     <div :class="`custom-rightside ${isSmallScreen ? 'col-12' : 'col-6'}`">
       <q-img
         no-spinner
-        src="/images/header-img-2.png"
+        alt="sectiontwo"
+        :src="`${url}images/section_2.png`"
         :style="`width: ${
           isSmallScreen ? '300px' : isMediumScreen ? '270px' : '600px'
         }`"
@@ -28,6 +29,9 @@
 export default {
   name: 'Section2Component',
   computed: {
+    url () {
+      return window.location.href.split('#')[0]
+    },
     isXSmallScreen () {
       return this.$q.screen.width <= 350
     },
