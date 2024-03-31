@@ -15,7 +15,7 @@
         <iframe
           style="border-radius: 4px; width: 100%; aspect-ratio: 16/9"
           type="text/html"
-          src="https://www.youtube.com/embed/jia3fhBQ8qI"
+          :src="getSelectedVideoCourse?.videoUrl"
           frameborder="0"
         />
       </div>
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { useVideoCourseStore } from 'src/stores/VideoCourse'
+import { useCourseStore } from 'src/stores/Course'
 
 export default {
   name: 'CourseDetailPage',
@@ -52,11 +52,11 @@ export default {
     isMediumScreen () {
       return this.$q.screen.width <= 750
     },
-    videoCourseStore () {
-      return useVideoCourseStore()
+    courseStore () {
+      return useCourseStore()
     },
     getSelectedVideoCourse () {
-      return this.videoCourseStore.getSelectedVideoCourse
+      return this.courseStore.getSelectedVideoCourse
     }
   },
   methods: {}

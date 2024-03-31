@@ -1,30 +1,29 @@
 <template>
   <q-form ref="form" class="custom-card" @submit="handleLogin">
     <p class="custom-card-title">
-      Please enter your username and password to enter the website.
+      Please enter your email and password to enter the website.
     </p>
     <div class="q-mt-lg column" style="gap: 2px">
       <CustomTextInput
-        :name="'username'"
-        :modelValue="formData.username"
-        :placeholder="'Username'"
+        :name="'email'"
+        :modelValue="formData.email"
+        :placeholder="'Email'"
         :rules="[v => !!v || 'Required']"
-        @update:modelValue="val => handleFormValue('username', val)"
+        @update:modelValue="val => handleFormValue('email', val)"
         :disable="isLoading"
       />
       <CustomTextInput
         :name="'password'"
         :modelValue="formData.password"
         :placeholder="'Password'"
-        :type="'password'"
         :rules="[v => !!v || 'Required']"
         @update:modelValue="val => handleFormValue('password', val)"
         :disable="isLoading"
+        :type="isVisible ? 'text' : 'password'"
+        :appendIconName="isVisible ? 'mdi-eye' : 'mdi-eye-off'"
+        @click:append="isVisible = !isVisible"
       />
     </div>
-    <!-- <div class="q-mt-sm">
-      <p class="custom-normal-text">forgot password?</p>
-    </div> -->
     <div class="q-mt-lg">
       <q-btn type="submit" flat no-caps dense class="custom-btn">Sign In</q-btn>
     </div>
@@ -41,16 +40,28 @@
 
 <script>
 import CustomTextInput from 'src/components/common/CustomTextInput.vue'
+import { useAuthStore } from 'src/stores/Auth'
+import { useGlobalStore } from 'src/stores/Global'
+
 export default {
   name: 'LoginCard',
   components: { CustomTextInput },
   data () {
     return {
       isLoading: false,
+      isVisible: false,
       formData: {
-        username: '',
+        email: '',
         password: ''
       }
+    }
+  },
+  computed: {
+    authStore () {
+      return useAuthStore()
+    },
+    globalStore () {
+      return useGlobalStore()
     }
   },
   methods: {
@@ -58,7 +69,28 @@ export default {
       this.formData[key] = data
     },
     handleLogin () {
-      console.log('login')
+      return new Promise((resolve, reject) => {
+        const payload = { ...this.formData }
+        this.globalStore.SET_DATA({ key: 'isLoading', data: true })
+        this.isLoading = true
+        this.authStore
+          .doLogin(payload)
+          .then(result => {
+            this.$q.notify({
+              position: 'top-right',
+              message: 'Login successful'
+            })
+            this.$router.replace('/')
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+          .finally(() => {
+            this.globalStore.SET_DATA({ key: 'isLoading', data: false })
+            this.isLoading = false
+          })
+      })
     }
   }
 }

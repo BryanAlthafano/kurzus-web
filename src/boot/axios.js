@@ -1,24 +1,47 @@
 import { boot } from 'quasar/wrappers'
 import axios from 'axios'
+import { Notify } from 'quasar'
+import { API_URL } from 'app/config'
+import { useAuthStore } from 'src/stores/Auth'
 
-// Be careful when using SSR for cross-request state pollution
-// due to creating a Singleton instance here;
-// If any client changes this (global) instance, it might be a
-// good idea to move this instance creation inside of the
-// "export default () => {}" function below (which runs individually
-// for each client)
-const api = axios.create({ baseURL: 'https://api.example.com' })
+const api = axios.create({ baseURL: API_URL })
 
 export default boot(({ app }) => {
-  // for use inside Vue files (Options API) through this.$axios and this.$api
+  const authStore = useAuthStore()
+  const token = authStore.getToken
 
+  if (token !== null) {
+    api.defaults.headers.common.Accept = 'application/json'
+    api.defaults.headers.common.Authorization = `Bearer ${token}`
+  }
   app.config.globalProperties.$axios = axios
-  // ^ ^ ^ this will allow you to use this.$axios (for Vue Options API form)
-  //       so you won't necessarily have to import axios in each vue file
-
   app.config.globalProperties.$api = api
-  // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
-  //       so you can easily perform requests against your app's API
+
+  api.interceptors.response.use(
+    config => {
+      return config
+    },
+    error => {
+      if (error.response.status === 401) {
+        authStore.CLEAR_DATA()
+        Notify.create({
+          message: 'Please login again',
+          position: 'top-right',
+          icon: 'mdi-alert'
+        })
+      } else if (
+        error.response.status === 422 ||
+        error.response.status === 400
+      ) {
+        Notify.create({
+          message: error.response.data.message,
+          position: 'top-right',
+          icon: 'mdi-alert'
+        })
+      }
+      return Promise.reject(error)
+    }
+  )
 })
 
 export { api }

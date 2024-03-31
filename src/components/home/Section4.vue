@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-container">
+  <div class="custom-container" v-if="feedbackData?.length">
     <div class="text-center row justify-center">
       <p class="custom-title">Testimony</p>
     </div>
@@ -13,41 +13,27 @@
             ? 'width: 49%'
             : 'width: 32%'
         "
-        v-for="(item, index) in testiList"
+        v-for="(item, index) in feedbackData"
         :key="index"
       >
         <p class="custom-card-title">{{ item?.name }}</p>
         <div class="q-py-xs">
           <div class="custom-decoration"></div>
         </div>
-        <p class="custom-card-description">{{ item?.message }}</p>
+        <p class="custom-card-description">{{ item?.content }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { useGlobalStore } from 'src/stores/Global'
+
 export default {
   name: 'Section4Component',
-  data () {
-    return {
-      testiList: [
-        {
-          name: 'Robert alfonso',
-          message:
-            'Lorem ipsum dolor sit amet consectetur. Elementum volutpat ipsum nibh erat nisi.Quam lorem nisl augue leo ut ut pretium sagittis viverra. Mattis augue quisquesagittis nascetur aliquam. Dolor cursus urna mauris id.'
-        },
-        {
-          name: 'Anthony',
-          message:
-            'Lorem ipsum dolor sit amet consectetur. Elementum volutpat ipsum nibh erat nisi.Quam lorem nisl augue leo ut ut pretium sagittis viverra. Mattis augue quisquesagittis nascetur aliquam. Dolor cursus urna mauris id.'
-        },
-        {
-          name: 'Malabar yaisi',
-          message:
-            'Lorem ipsum dolor sit amet consectetur. Elementum volutpat ipsum nibh erat nisi.Quam lorem nisl augue leo ut ut pretium sagittis viverra. Mattis augue quisquesagittis nascetur aliquam. Dolor cursus urna mauris id.'
-        }
-      ]
+  mounted () {
+    if (!this.feedbackData || this.feedbackData?.length === 0) {
+      this.getFeedback()
     }
   },
   computed: {
@@ -59,6 +45,26 @@ export default {
     },
     isMediumScreen () {
       return this.$q.screen.width <= 750
+    },
+    globalStore () {
+      return useGlobalStore()
+    },
+    feedbackData () {
+      return this.globalStore.feedback
+    }
+  },
+  methods: {
+    getFeedback () {
+      return new Promise((resolve, reject) => {
+        this.globalStore
+          .getFeedback()
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
     }
   }
 }
@@ -95,7 +101,7 @@ export default {
   }
 }
 .custom-card {
-  min-height: 200px;
+  min-height: 100px;
   margin-bottom: 10px;
   background-color: #ffffff;
   border-radius: 20px;
@@ -103,7 +109,7 @@ export default {
   border: solid 1px #8d7474;
   @media (min-width: 500px) {
     padding: 20px !important;
-    min-height: 400px;
+    min-height: 200px;
   }
 }
 .custom-card-title {

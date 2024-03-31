@@ -24,8 +24,13 @@
         :name="'password'"
         :modelValue="formData.password"
         :placeholder="'Input password'"
-        :type="'password'"
-        :rules="[v => !!v || 'Required']"
+        :type="isVisible ? 'text' : 'password'"
+        :appendIconName="isVisible ? 'mdi-eye' : 'mdi-eye-off'"
+        @click:append="isVisible = !isVisible"
+        :rules="[
+          v => !!v || 'Required',
+          v => v.length >= 8 || 'Password min 8'
+        ]"
         @update:modelValue="val => handleFormValue('password', val)"
         :disable="isLoading"
       />
@@ -33,7 +38,9 @@
         :name="'confirm_password'"
         :modelValue="formData.confirm_password"
         :placeholder="'Repeat password'"
-        :type="'password'"
+        :type="isVisible ? 'text' : 'password'"
+        :appendIconName="isVisible ? 'mdi-eye' : 'mdi-eye-off'"
+        @click:append="isVisible = !isVisible"
         :rules="[
           v => !!v || 'Required',
           v => v === formData.password || 'Password not match'
@@ -58,12 +65,16 @@
 
 <script>
 import CustomTextInput from 'src/components/common/CustomTextInput.vue'
+import { useAuthStore } from 'src/stores/Auth'
+import { useGlobalStore } from 'src/stores/Global'
+
 export default {
   name: 'LoginCard',
   components: { CustomTextInput },
   data () {
     return {
       isLoading: false,
+      isVisible: false,
       formData: {
         email: '',
         username: '',
@@ -72,12 +83,46 @@ export default {
       }
     }
   },
+  computed: {
+    authStore () {
+      return useAuthStore()
+    },
+    globalStore () {
+      return useGlobalStore()
+    }
+  },
   methods: {
     handleFormValue (key, data) {
       this.formData[key] = data
     },
     handleRegister () {
-      console.log('register')
+      return new Promise((resolve, reject) => {
+        const payload = {
+          role_id: 1,
+          email: this.formData.email,
+          username: this.formData.username,
+          password: this.formData.password
+        }
+        this.globalStore.SET_DATA({ key: 'isLoading', data: true })
+        this.isLoading = true
+        this.authStore
+          .doRegister(payload)
+          .then(result => {
+            this.$q.notify({
+              position: 'top-right',
+              message: 'Registration successful'
+            })
+            this.$router.replace('/')
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+          .finally(() => {
+            this.globalStore.SET_DATA({ key: 'isLoading', data: false })
+            this.isLoading = false
+          })
+      })
     }
   }
 }

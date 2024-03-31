@@ -1,8 +1,8 @@
 <template>
-  <q-page class="custom-page">
+  <q-page class="custom-page" v-if="courseData?.length">
     <div class="row justify-between">
       <p class="custom-title self-center">Course</p>
-      <div>
+      <!-- <div>
         <CustomTextInput
           :modelValue="searchModel"
           :rounded="true"
@@ -10,18 +10,18 @@
           :prependIconName="'mdi-magnify'"
           @update:modelValue="val => (searchModel = val)"
         />
-      </div>
+      </div> -->
     </div>
-    <div class="row justify-center q-mt-lg">
+    <!-- <div class="row justify-center q-mt-lg">
       <div v-for="(item, index) in categories" :key="index" style="width: 70px">
         <q-btn @click="selectedCategory = index" flat dense no-caps>
           {{ item?.title }}
         </q-btn>
       </div>
-    </div>
+    </div> -->
     <div class="row justify-start custom-container">
       <div
-        v-for="(item, index) in categories[selectedCategory].items"
+        v-for="(item, index) in courseData"
         :key="index"
         class="custom-card col-12 col-sm-6 col-md-4 col-lg-3 q-px-md"
       >
@@ -30,15 +30,13 @@
             no-spinner
             class="custom-card-image"
             alt="card-img"
-            :src="url + item?.imageUrl"
+            :src="item?.imageUrl"
           />
           <div class="row justify-between q-mt-sm q-px-sm">
-            <p class="custom-card-title self-center">
+            <p class="custom-card-title self-center" style="max-width: 60%">
               {{ item?.title }}
             </p>
-            <p class="custom-card-description self-center">
-              {{ item?.duration }} read
-            </p>
+            <p class="custom-card-description">{{ item?.duration }} read</p>
           </div>
         </div>
       </div>
@@ -47,12 +45,13 @@
 </template>
 
 <script>
-import CustomTextInput from 'src/components/common/CustomTextInput.vue'
+// import CustomTextInput from 'src/components/common/CustomTextInput.vue'
 import { useCourseStore } from 'src/stores/Course'
+import { useGlobalStore } from 'src/stores/Global'
 
 export default {
   name: 'CoursePage',
-  components: { CustomTextInput },
+  // components: { CustomTextInput },
   data () {
     return {
       searchModel: '',
@@ -143,6 +142,11 @@ export default {
       ]
     }
   },
+  mounted () {
+    if (!this.courseData || this.courseData?.length === 0) {
+      this.getCourse()
+    }
+  },
   computed: {
     url () {
       return window.location.href.split('#')[0]
@@ -158,9 +162,34 @@ export default {
     },
     courseStore () {
       return useCourseStore()
+    },
+    courseData () {
+      return this.courseStore.course
+    },
+    authStore () {
+      return useAuthStore()
+    },
+    globalStore () {
+      return useGlobalStore()
     }
   },
   methods: {
+    getCourse () {
+      return new Promise((resolve, reject) => {
+        this.globalStore.SET_DATA({ key: 'isLoading', data: true })
+        this.courseStore
+          .getCourse()
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+          .finally(() => {
+            this.globalStore.SET_DATA({ key: 'isLoading', data: false })
+          })
+      })
+    },
     handleDetail (item) {
       const payload = {
         key: 'selectedCourse',
@@ -217,10 +246,10 @@ export default {
 }
 .custom-card-description {
   font-weight: 400;
-  font-size: 12px;
+  font-size: 10px;
   color: #a5a5a5;
   @media (min-width: 500px) {
-    font-size: 14px !important;
+    font-size: 12px !important;
   }
 }
 </style>

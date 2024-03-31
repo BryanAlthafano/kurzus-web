@@ -1,3 +1,6 @@
+import multiguard from 'vue-router-multiguard'
+import { checkIsLoggedIn } from './middlewares'
+
 const routes = [
   {
     path: '/',
@@ -24,6 +27,7 @@ const routes = [
   {
     path: '/course/detail',
     component: () => import('layouts/BlankLayout.vue'),
+    beforeEnter: multiguard([checkIsLoggedIn]),
     children: [
       {
         name: 'CourseDetailPage',
@@ -35,6 +39,7 @@ const routes = [
   {
     path: '/video-course/detail',
     component: () => import('layouts/BlankLayout.vue'),
+    beforeEnter: multiguard([checkIsLoggedIn]),
     children: [
       {
         name: 'VideoCourseDetailPage',

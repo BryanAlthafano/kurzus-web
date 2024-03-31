@@ -12,14 +12,22 @@
       </p>
     </div>
     <div class="row justify-center">
-      <q-btn flat dense no-caps class="custom-btn">Get Started</q-btn>
+      <q-btn
+        flat
+        dense
+        no-caps
+        class="custom-btn"
+        @click="$router.push('/video-course')"
+      >
+        Get Started
+      </q-btn>
     </div>
     <div class="row justify-center q-pa-md q-mt-xl">
       <iframe
         style="border-radius: 4px; aspect-ratio: 16/9"
         type="text/html"
         :width="isSmallScreen ? '100%' : '600'"
-        src="https://www.youtube.com/embed/jia3fhBQ8qI"
+        src="https://www.youtube.com/embed/YT08A8Jucj0"
         frameborder="0"
       />
     </div>

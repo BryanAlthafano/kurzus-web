@@ -4,7 +4,7 @@
       <q-img
         no-spinner
         alt="header-course"
-        :src="url + getSelectedCourse?.imageUrl"
+        :src="getSelectedCourse?.imageUrl"
         :style="`width: 100%; height: ${
           isSmallScreen ? '200px' : isMediumScreen ? '300px' : '400px'
         }`"
@@ -20,7 +20,7 @@
               <q-breadcrumbs-el label="Detail Course" class="text-black" />
             </q-breadcrumbs>
             <div class="q-mt-sm">
-              <p class="custom-title">{{ getSelectedCourse?.title }}</p>
+              <p>{{ getSelectedCourse?.title }}</p>
             </div>
           </div>
           <div

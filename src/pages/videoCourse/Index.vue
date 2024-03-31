@@ -1,8 +1,8 @@
 <template>
-  <q-page class="custom-page">
+  <q-page class="custom-page" v-if="videoCourseData?.length">
     <div class="row justify-between">
       <p class="custom-title self-center">Video Course</p>
-      <div>
+      <!-- <div>
         <CustomTextInput
           :modelValue="searchModel"
           :rounded="true"
@@ -10,18 +10,18 @@
           :prependIconName="'mdi-magnify'"
           @update:modelValue="val => (searchModel = val)"
         />
-      </div>
+      </div> -->
     </div>
-    <div class="row justify-center q-mt-lg">
+    <!-- <div class="row justify-center q-mt-lg">
       <div v-for="(item, index) in categories" :key="index" style="width: 70px">
         <q-btn @click="selectedCategory = index" flat dense no-caps>
           {{ item?.title }}
         </q-btn>
       </div>
-    </div>
+    </div> -->
     <div class="row justify-start custom-container">
       <div
-        v-for="(item, index) in categories[selectedCategory].items"
+        v-for="(item, index) in videoCourseData"
         :key="index"
         class="custom-card col-12 col-sm-6 col-md-4 col-lg-3 q-px-md"
       >
@@ -30,15 +30,13 @@
             no-spinner
             class="custom-card-image"
             alt="card-img"
-            :src="url + item?.imageUrl"
+            :src="item?.imageUrl"
           />
           <div class="row justify-between q-mt-sm q-px-sm">
-            <p class="custom-card-title self-center">
+            <p class="custom-card-title self-center" style="max-width: 60%">
               {{ item?.title }}
             </p>
-            <p class="custom-card-description self-center">
-              {{ item?.duration }} read
-            </p>
+            <p class="custom-card-description">{{ item?.duration }} read</p>
           </div>
         </div>
       </div>
@@ -47,100 +45,23 @@
 </template>
 
 <script>
-import CustomTextInput from 'src/components/common/CustomTextInput.vue'
-import { useVideoCourseStore } from 'src/stores/VideoCourse'
+// import CustomTextInput from 'src/components/common/CustomTextInput.vue'
+import { useCourseStore } from 'src/stores/Course'
+import { useGlobalStore } from 'src/stores/Global'
 
 export default {
   name: 'VideoCoursePage',
-  components: { CustomTextInput },
+  // components: { CustomTextInput },
   data () {
     return {
       searchModel: '',
       selectedCategory: 0,
-      categories: [
-        {
-          title: 'Math',
-          items: [
-            {
-              title: 'Math class 10',
-              duration: '10 min',
-              imageUrl: 'images/sampleCourseImg.png',
-              content: `<p class='custom-content-title'>Pendahuluan</p><br/><p class='custom-content-description'>Lorem ipsum dolor sit amet consectetur. Ac imperdiet ac sed in faucibus dignissim massa luctus pellentesque. Nibh pellentesque in egestas blandit volutpat. Faucibus bibendum lobortis vehicula urna sollicitudin blandit purus suspendisse interdum. Fusce facilisis quis lectus varius varius quam sed aliquam. Nisl cursus egestas in morbi fermentum. Dolor blandit sed purus lobortis dui est pellentesque. Urna tincidunt elementum velit venenatis. Egestas sapien vitae ante morbi viverra tristique. Curabitur elit morbi tempus malesuada tortor. Nunc massa diam proin auctor dictumst auctor leo. Duis pretium ac varius urna id molestie mattis tristique mauris. Elementum eget augue mauris et nec nullam. Pharetra dui tellus diam in vestibulum in odio viverra a. Placerat sed sit adipiscing quis tincidunt gravida quis purus ultricies. Et non mattis sapien sit hendrerit hendrerit. Tellus tristique elementum sit amet tellus vulputate interdum facilisi bibendum. Nunc duis libero duis tincidunt. Curabitur mus consectetur ultricies integer venenatis in ac. Massa gravida suspendisse tincidunt pharetra lobortis risus odio pretium sagittis. Tristique velit elementum sagittis nunc sit ante ante dui. Sed eu sed porttitor tristique nunc leo lacus feugiat. Urna risus quisque amet semper venenatis justo eget. Integer ultricies maecenas velit lectus nulla donec. Gravida lorem facilisis imperdiet nisi. Libero dolor iaculis sed in consectetur scelerisque ullamcorper ultricies amet. Eget aliquam nisi leo turpis ut bibendum amet. Vitae id ut lobortis mattis ipsum sagittis. Purus vestibulum non malesuada ultrices consequat eget eu. Vitae odio aliquet in diam accumsan consequat aliquet egestas varius. Ut diam eu in leo. In sit suspendisse sagittis sollicitudin sagittis id imperdiet. Facilisis sem neque lectus purus dictumst nulla lectus sed.</p>`
-            },
-            {
-              title: 'Math class 10',
-              duration: '10 min',
-              imageUrl: 'images/sampleCourseImg.png',
-              content: `<p class='custom-content-title'>Pendahuluan</p><br/><p class='custom-content-description'>Lorem ipsum dolor sit amet consectetur. Ac imperdiet ac sed in faucibus dignissim massa luctus pellentesque. Nibh pellentesque in egestas blandit volutpat. Faucibus bibendum lobortis vehicula urna sollicitudin blandit purus suspendisse interdum. Fusce facilisis quis lectus varius varius quam sed aliquam. Nisl cursus egestas in morbi fermentum. Dolor blandit sed purus lobortis dui est pellentesque. Urna tincidunt elementum velit venenatis. Egestas sapien vitae ante morbi viverra tristique. Curabitur elit morbi tempus malesuada tortor. Nunc massa diam proin auctor dictumst auctor leo. Duis pretium ac varius urna id molestie mattis tristique mauris. Elementum eget augue mauris et nec nullam. Pharetra dui tellus diam in vestibulum in odio viverra a. Placerat sed sit adipiscing quis tincidunt gravida quis purus ultricies. Et non mattis sapien sit hendrerit hendrerit. Tellus tristique elementum sit amet tellus vulputate interdum facilisi bibendum. Nunc duis libero duis tincidunt. Curabitur mus consectetur ultricies integer venenatis in ac. Massa gravida suspendisse tincidunt pharetra lobortis risus odio pretium sagittis. Tristique velit elementum sagittis nunc sit ante ante dui. Sed eu sed porttitor tristique nunc leo lacus feugiat. Urna risus quisque amet semper venenatis justo eget. Integer ultricies maecenas velit lectus nulla donec. Gravida lorem facilisis imperdiet nisi. Libero dolor iaculis sed in consectetur scelerisque ullamcorper ultricies amet. Eget aliquam nisi leo turpis ut bibendum amet. Vitae id ut lobortis mattis ipsum sagittis. Purus vestibulum non malesuada ultrices consequat eget eu. Vitae odio aliquet in diam accumsan consequat aliquet egestas varius. Ut diam eu in leo. In sit suspendisse sagittis sollicitudin sagittis id imperdiet. Facilisis sem neque lectus purus dictumst nulla lectus sed.</p>`
-            },
-            {
-              title: 'Math class 10',
-              duration: '10 min',
-              imageUrl: 'images/sampleCourseImg.png',
-              content: `<p class='custom-content-title'>Pendahuluan</p><br/><p class='custom-content-description'>Lorem ipsum dolor sit amet consectetur. Ac imperdiet ac sed in faucibus dignissim massa luctus pellentesque. Nibh pellentesque in egestas blandit volutpat. Faucibus bibendum lobortis vehicula urna sollicitudin blandit purus suspendisse interdum. Fusce facilisis quis lectus varius varius quam sed aliquam. Nisl cursus egestas in morbi fermentum. Dolor blandit sed purus lobortis dui est pellentesque. Urna tincidunt elementum velit venenatis. Egestas sapien vitae ante morbi viverra tristique. Curabitur elit morbi tempus malesuada tortor. Nunc massa diam proin auctor dictumst auctor leo. Duis pretium ac varius urna id molestie mattis tristique mauris. Elementum eget augue mauris et nec nullam. Pharetra dui tellus diam in vestibulum in odio viverra a. Placerat sed sit adipiscing quis tincidunt gravida quis purus ultricies. Et non mattis sapien sit hendrerit hendrerit. Tellus tristique elementum sit amet tellus vulputate interdum facilisi bibendum. Nunc duis libero duis tincidunt. Curabitur mus consectetur ultricies integer venenatis in ac. Massa gravida suspendisse tincidunt pharetra lobortis risus odio pretium sagittis. Tristique velit elementum sagittis nunc sit ante ante dui. Sed eu sed porttitor tristique nunc leo lacus feugiat. Urna risus quisque amet semper venenatis justo eget. Integer ultricies maecenas velit lectus nulla donec. Gravida lorem facilisis imperdiet nisi. Libero dolor iaculis sed in consectetur scelerisque ullamcorper ultricies amet. Eget aliquam nisi leo turpis ut bibendum amet. Vitae id ut lobortis mattis ipsum sagittis. Purus vestibulum non malesuada ultrices consequat eget eu. Vitae odio aliquet in diam accumsan consequat aliquet egestas varius. Ut diam eu in leo. In sit suspendisse sagittis sollicitudin sagittis id imperdiet. Facilisis sem neque lectus purus dictumst nulla lectus sed.</p>`
-            },
-            {
-              title: 'Math class 10',
-              duration: '10 min',
-              imageUrl: 'images/sampleCourseImg.png',
-              content: `<p class='custom-content-title'>Pendahuluan</p><br/><p class='custom-content-description'>Lorem ipsum dolor sit amet consectetur. Ac imperdiet ac sed in faucibus dignissim massa luctus pellentesque. Nibh pellentesque in egestas blandit volutpat. Faucibus bibendum lobortis vehicula urna sollicitudin blandit purus suspendisse interdum. Fusce facilisis quis lectus varius varius quam sed aliquam. Nisl cursus egestas in morbi fermentum. Dolor blandit sed purus lobortis dui est pellentesque. Urna tincidunt elementum velit venenatis. Egestas sapien vitae ante morbi viverra tristique. Curabitur elit morbi tempus malesuada tortor. Nunc massa diam proin auctor dictumst auctor leo. Duis pretium ac varius urna id molestie mattis tristique mauris. Elementum eget augue mauris et nec nullam. Pharetra dui tellus diam in vestibulum in odio viverra a. Placerat sed sit adipiscing quis tincidunt gravida quis purus ultricies. Et non mattis sapien sit hendrerit hendrerit. Tellus tristique elementum sit amet tellus vulputate interdum facilisi bibendum. Nunc duis libero duis tincidunt. Curabitur mus consectetur ultricies integer venenatis in ac. Massa gravida suspendisse tincidunt pharetra lobortis risus odio pretium sagittis. Tristique velit elementum sagittis nunc sit ante ante dui. Sed eu sed porttitor tristique nunc leo lacus feugiat. Urna risus quisque amet semper venenatis justo eget. Integer ultricies maecenas velit lectus nulla donec. Gravida lorem facilisis imperdiet nisi. Libero dolor iaculis sed in consectetur scelerisque ullamcorper ultricies amet. Eget aliquam nisi leo turpis ut bibendum amet. Vitae id ut lobortis mattis ipsum sagittis. Purus vestibulum non malesuada ultrices consequat eget eu. Vitae odio aliquet in diam accumsan consequat aliquet egestas varius. Ut diam eu in leo. In sit suspendisse sagittis sollicitudin sagittis id imperdiet. Facilisis sem neque lectus purus dictumst nulla lectus sed.</p>`
-            },
-            {
-              title: 'Math class 10',
-              duration: '10 min',
-              imageUrl: 'images/sampleCourseImg.png',
-              content: `<p class='custom-content-title'>Pendahuluan</p><br/><p class='custom-content-description'>Lorem ipsum dolor sit amet consectetur. Ac imperdiet ac sed in faucibus dignissim massa luctus pellentesque. Nibh pellentesque in egestas blandit volutpat. Faucibus bibendum lobortis vehicula urna sollicitudin blandit purus suspendisse interdum. Fusce facilisis quis lectus varius varius quam sed aliquam. Nisl cursus egestas in morbi fermentum. Dolor blandit sed purus lobortis dui est pellentesque. Urna tincidunt elementum velit venenatis. Egestas sapien vitae ante morbi viverra tristique. Curabitur elit morbi tempus malesuada tortor. Nunc massa diam proin auctor dictumst auctor leo. Duis pretium ac varius urna id molestie mattis tristique mauris. Elementum eget augue mauris et nec nullam. Pharetra dui tellus diam in vestibulum in odio viverra a. Placerat sed sit adipiscing quis tincidunt gravida quis purus ultricies. Et non mattis sapien sit hendrerit hendrerit. Tellus tristique elementum sit amet tellus vulputate interdum facilisi bibendum. Nunc duis libero duis tincidunt. Curabitur mus consectetur ultricies integer venenatis in ac. Massa gravida suspendisse tincidunt pharetra lobortis risus odio pretium sagittis. Tristique velit elementum sagittis nunc sit ante ante dui. Sed eu sed porttitor tristique nunc leo lacus feugiat. Urna risus quisque amet semper venenatis justo eget. Integer ultricies maecenas velit lectus nulla donec. Gravida lorem facilisis imperdiet nisi. Libero dolor iaculis sed in consectetur scelerisque ullamcorper ultricies amet. Eget aliquam nisi leo turpis ut bibendum amet. Vitae id ut lobortis mattis ipsum sagittis. Purus vestibulum non malesuada ultrices consequat eget eu. Vitae odio aliquet in diam accumsan consequat aliquet egestas varius. Ut diam eu in leo. In sit suspendisse sagittis sollicitudin sagittis id imperdiet. Facilisis sem neque lectus purus dictumst nulla lectus sed.</p>`
-            },
-            {
-              title: 'Math class 10',
-              duration: '10 min',
-              imageUrl: 'images/sampleCourseImg.png',
-              content: `<p class='custom-content-title'>Pendahuluan</p><br/><p class='custom-content-description'>Lorem ipsum dolor sit amet consectetur. Ac imperdiet ac sed in faucibus dignissim massa luctus pellentesque. Nibh pellentesque in egestas blandit volutpat. Faucibus bibendum lobortis vehicula urna sollicitudin blandit purus suspendisse interdum. Fusce facilisis quis lectus varius varius quam sed aliquam. Nisl cursus egestas in morbi fermentum. Dolor blandit sed purus lobortis dui est pellentesque. Urna tincidunt elementum velit venenatis. Egestas sapien vitae ante morbi viverra tristique. Curabitur elit morbi tempus malesuada tortor. Nunc massa diam proin auctor dictumst auctor leo. Duis pretium ac varius urna id molestie mattis tristique mauris. Elementum eget augue mauris et nec nullam. Pharetra dui tellus diam in vestibulum in odio viverra a. Placerat sed sit adipiscing quis tincidunt gravida quis purus ultricies. Et non mattis sapien sit hendrerit hendrerit. Tellus tristique elementum sit amet tellus vulputate interdum facilisi bibendum. Nunc duis libero duis tincidunt. Curabitur mus consectetur ultricies integer venenatis in ac. Massa gravida suspendisse tincidunt pharetra lobortis risus odio pretium sagittis. Tristique velit elementum sagittis nunc sit ante ante dui. Sed eu sed porttitor tristique nunc leo lacus feugiat. Urna risus quisque amet semper venenatis justo eget. Integer ultricies maecenas velit lectus nulla donec. Gravida lorem facilisis imperdiet nisi. Libero dolor iaculis sed in consectetur scelerisque ullamcorper ultricies amet. Eget aliquam nisi leo turpis ut bibendum amet. Vitae id ut lobortis mattis ipsum sagittis. Purus vestibulum non malesuada ultrices consequat eget eu. Vitae odio aliquet in diam accumsan consequat aliquet egestas varius. Ut diam eu in leo. In sit suspendisse sagittis sollicitudin sagittis id imperdiet. Facilisis sem neque lectus purus dictumst nulla lectus sed.</p>`
-            }
-          ]
-        },
-        {
-          title: 'English',
-          items: [
-            {
-              title: 'English class 10',
-              duration: '10 min',
-              imageUrl: 'images/sampleCourseImg.png',
-              content: `<p class='custom-content-title'>Pendahuluan</p><br/><p class='custom-content-description'>Lorem ipsum dolor sit amet consectetur. Ac imperdiet ac sed in faucibus dignissim massa luctus pellentesque. Nibh pellentesque in egestas blandit volutpat. Faucibus bibendum lobortis vehicula urna sollicitudin blandit purus suspendisse interdum. Fusce facilisis quis lectus varius varius quam sed aliquam. Nisl cursus egestas in morbi fermentum. Dolor blandit sed purus lobortis dui est pellentesque. Urna tincidunt elementum velit venenatis. Egestas sapien vitae ante morbi viverra tristique. Curabitur elit morbi tempus malesuada tortor. Nunc massa diam proin auctor dictumst auctor leo. Duis pretium ac varius urna id molestie mattis tristique mauris. Elementum eget augue mauris et nec nullam. Pharetra dui tellus diam in vestibulum in odio viverra a. Placerat sed sit adipiscing quis tincidunt gravida quis purus ultricies. Et non mattis sapien sit hendrerit hendrerit. Tellus tristique elementum sit amet tellus vulputate interdum facilisi bibendum. Nunc duis libero duis tincidunt. Curabitur mus consectetur ultricies integer venenatis in ac. Massa gravida suspendisse tincidunt pharetra lobortis risus odio pretium sagittis. Tristique velit elementum sagittis nunc sit ante ante dui. Sed eu sed porttitor tristique nunc leo lacus feugiat. Urna risus quisque amet semper venenatis justo eget. Integer ultricies maecenas velit lectus nulla donec. Gravida lorem facilisis imperdiet nisi. Libero dolor iaculis sed in consectetur scelerisque ullamcorper ultricies amet. Eget aliquam nisi leo turpis ut bibendum amet. Vitae id ut lobortis mattis ipsum sagittis. Purus vestibulum non malesuada ultrices consequat eget eu. Vitae odio aliquet in diam accumsan consequat aliquet egestas varius. Ut diam eu in leo. In sit suspendisse sagittis sollicitudin sagittis id imperdiet. Facilisis sem neque lectus purus dictumst nulla lectus sed.</p>`
-            },
-            {
-              title: 'English class 10',
-              duration: '10 min',
-              imageUrl: 'images/sampleCourseImg.png',
-              content: `<p class='custom-content-title'>Pendahuluan</p><br/><p class='custom-content-description'>Lorem ipsum dolor sit amet consectetur. Ac imperdiet ac sed in faucibus dignissim massa luctus pellentesque. Nibh pellentesque in egestas blandit volutpat. Faucibus bibendum lobortis vehicula urna sollicitudin blandit purus suspendisse interdum. Fusce facilisis quis lectus varius varius quam sed aliquam. Nisl cursus egestas in morbi fermentum. Dolor blandit sed purus lobortis dui est pellentesque. Urna tincidunt elementum velit venenatis. Egestas sapien vitae ante morbi viverra tristique. Curabitur elit morbi tempus malesuada tortor. Nunc massa diam proin auctor dictumst auctor leo. Duis pretium ac varius urna id molestie mattis tristique mauris. Elementum eget augue mauris et nec nullam. Pharetra dui tellus diam in vestibulum in odio viverra a. Placerat sed sit adipiscing quis tincidunt gravida quis purus ultricies. Et non mattis sapien sit hendrerit hendrerit. Tellus tristique elementum sit amet tellus vulputate interdum facilisi bibendum. Nunc duis libero duis tincidunt. Curabitur mus consectetur ultricies integer venenatis in ac. Massa gravida suspendisse tincidunt pharetra lobortis risus odio pretium sagittis. Tristique velit elementum sagittis nunc sit ante ante dui. Sed eu sed porttitor tristique nunc leo lacus feugiat. Urna risus quisque amet semper venenatis justo eget. Integer ultricies maecenas velit lectus nulla donec. Gravida lorem facilisis imperdiet nisi. Libero dolor iaculis sed in consectetur scelerisque ullamcorper ultricies amet. Eget aliquam nisi leo turpis ut bibendum amet. Vitae id ut lobortis mattis ipsum sagittis. Purus vestibulum non malesuada ultrices consequat eget eu. Vitae odio aliquet in diam accumsan consequat aliquet egestas varius. Ut diam eu in leo. In sit suspendisse sagittis sollicitudin sagittis id imperdiet. Facilisis sem neque lectus purus dictumst nulla lectus sed.</p>`
-            },
-            {
-              title: 'English class 10',
-              duration: '10 min',
-              imageUrl: 'images/sampleCourseImg.png',
-              content: `<p class='custom-content-title'>Pendahuluan</p><br/><p class='custom-content-description'>Lorem ipsum dolor sit amet consectetur. Ac imperdiet ac sed in faucibus dignissim massa luctus pellentesque. Nibh pellentesque in egestas blandit volutpat. Faucibus bibendum lobortis vehicula urna sollicitudin blandit purus suspendisse interdum. Fusce facilisis quis lectus varius varius quam sed aliquam. Nisl cursus egestas in morbi fermentum. Dolor blandit sed purus lobortis dui est pellentesque. Urna tincidunt elementum velit venenatis. Egestas sapien vitae ante morbi viverra tristique. Curabitur elit morbi tempus malesuada tortor. Nunc massa diam proin auctor dictumst auctor leo. Duis pretium ac varius urna id molestie mattis tristique mauris. Elementum eget augue mauris et nec nullam. Pharetra dui tellus diam in vestibulum in odio viverra a. Placerat sed sit adipiscing quis tincidunt gravida quis purus ultricies. Et non mattis sapien sit hendrerit hendrerit. Tellus tristique elementum sit amet tellus vulputate interdum facilisi bibendum. Nunc duis libero duis tincidunt. Curabitur mus consectetur ultricies integer venenatis in ac. Massa gravida suspendisse tincidunt pharetra lobortis risus odio pretium sagittis. Tristique velit elementum sagittis nunc sit ante ante dui. Sed eu sed porttitor tristique nunc leo lacus feugiat. Urna risus quisque amet semper venenatis justo eget. Integer ultricies maecenas velit lectus nulla donec. Gravida lorem facilisis imperdiet nisi. Libero dolor iaculis sed in consectetur scelerisque ullamcorper ultricies amet. Eget aliquam nisi leo turpis ut bibendum amet. Vitae id ut lobortis mattis ipsum sagittis. Purus vestibulum non malesuada ultrices consequat eget eu. Vitae odio aliquet in diam accumsan consequat aliquet egestas varius. Ut diam eu in leo. In sit suspendisse sagittis sollicitudin sagittis id imperdiet. Facilisis sem neque lectus purus dictumst nulla lectus sed.</p>`
-            },
-            {
-              title: 'English class 10',
-              duration: '10 min',
-              imageUrl: 'images/sampleCourseImg.png',
-              content: `<p class='custom-content-title'>Pendahuluan</p><br/><p class='custom-content-description'>Lorem ipsum dolor sit amet consectetur. Ac imperdiet ac sed in faucibus dignissim massa luctus pellentesque. Nibh pellentesque in egestas blandit volutpat. Faucibus bibendum lobortis vehicula urna sollicitudin blandit purus suspendisse interdum. Fusce facilisis quis lectus varius varius quam sed aliquam. Nisl cursus egestas in morbi fermentum. Dolor blandit sed purus lobortis dui est pellentesque. Urna tincidunt elementum velit venenatis. Egestas sapien vitae ante morbi viverra tristique. Curabitur elit morbi tempus malesuada tortor. Nunc massa diam proin auctor dictumst auctor leo. Duis pretium ac varius urna id molestie mattis tristique mauris. Elementum eget augue mauris et nec nullam. Pharetra dui tellus diam in vestibulum in odio viverra a. Placerat sed sit adipiscing quis tincidunt gravida quis purus ultricies. Et non mattis sapien sit hendrerit hendrerit. Tellus tristique elementum sit amet tellus vulputate interdum facilisi bibendum. Nunc duis libero duis tincidunt. Curabitur mus consectetur ultricies integer venenatis in ac. Massa gravida suspendisse tincidunt pharetra lobortis risus odio pretium sagittis. Tristique velit elementum sagittis nunc sit ante ante dui. Sed eu sed porttitor tristique nunc leo lacus feugiat. Urna risus quisque amet semper venenatis justo eget. Integer ultricies maecenas velit lectus nulla donec. Gravida lorem facilisis imperdiet nisi. Libero dolor iaculis sed in consectetur scelerisque ullamcorper ultricies amet. Eget aliquam nisi leo turpis ut bibendum amet. Vitae id ut lobortis mattis ipsum sagittis. Purus vestibulum non malesuada ultrices consequat eget eu. Vitae odio aliquet in diam accumsan consequat aliquet egestas varius. Ut diam eu in leo. In sit suspendisse sagittis sollicitudin sagittis id imperdiet. Facilisis sem neque lectus purus dictumst nulla lectus sed.</p>`
-            },
-            {
-              title: 'English class 10',
-              duration: '10 min',
-              imageUrl: 'images/sampleCourseImg.png',
-              content: `<p class='custom-content-title'>Pendahuluan</p><br/><p class='custom-content-description'>Lorem ipsum dolor sit amet consectetur. Ac imperdiet ac sed in faucibus dignissim massa luctus pellentesque. Nibh pellentesque in egestas blandit volutpat. Faucibus bibendum lobortis vehicula urna sollicitudin blandit purus suspendisse interdum. Fusce facilisis quis lectus varius varius quam sed aliquam. Nisl cursus egestas in morbi fermentum. Dolor blandit sed purus lobortis dui est pellentesque. Urna tincidunt elementum velit venenatis. Egestas sapien vitae ante morbi viverra tristique. Curabitur elit morbi tempus malesuada tortor. Nunc massa diam proin auctor dictumst auctor leo. Duis pretium ac varius urna id molestie mattis tristique mauris. Elementum eget augue mauris et nec nullam. Pharetra dui tellus diam in vestibulum in odio viverra a. Placerat sed sit adipiscing quis tincidunt gravida quis purus ultricies. Et non mattis sapien sit hendrerit hendrerit. Tellus tristique elementum sit amet tellus vulputate interdum facilisi bibendum. Nunc duis libero duis tincidunt. Curabitur mus consectetur ultricies integer venenatis in ac. Massa gravida suspendisse tincidunt pharetra lobortis risus odio pretium sagittis. Tristique velit elementum sagittis nunc sit ante ante dui. Sed eu sed porttitor tristique nunc leo lacus feugiat. Urna risus quisque amet semper venenatis justo eget. Integer ultricies maecenas velit lectus nulla donec. Gravida lorem facilisis imperdiet nisi. Libero dolor iaculis sed in consectetur scelerisque ullamcorper ultricies amet. Eget aliquam nisi leo turpis ut bibendum amet. Vitae id ut lobortis mattis ipsum sagittis. Purus vestibulum non malesuada ultrices consequat eget eu. Vitae odio aliquet in diam accumsan consequat aliquet egestas varius. Ut diam eu in leo. In sit suspendisse sagittis sollicitudin sagittis id imperdiet. Facilisis sem neque lectus purus dictumst nulla lectus sed.</p>`
-            },
-            {
-              title: 'English class 10',
-              duration: '10 min',
-              imageUrl: 'images/sampleCourseImg.png',
-              content: `<p class='custom-content-title'>Pendahuluan</p><br/><p class='custom-content-description'>Lorem ipsum dolor sit amet consectetur. Ac imperdiet ac sed in faucibus dignissim massa luctus pellentesque. Nibh pellentesque in egestas blandit volutpat. Faucibus bibendum lobortis vehicula urna sollicitudin blandit purus suspendisse interdum. Fusce facilisis quis lectus varius varius quam sed aliquam. Nisl cursus egestas in morbi fermentum. Dolor blandit sed purus lobortis dui est pellentesque. Urna tincidunt elementum velit venenatis. Egestas sapien vitae ante morbi viverra tristique. Curabitur elit morbi tempus malesuada tortor. Nunc massa diam proin auctor dictumst auctor leo. Duis pretium ac varius urna id molestie mattis tristique mauris. Elementum eget augue mauris et nec nullam. Pharetra dui tellus diam in vestibulum in odio viverra a. Placerat sed sit adipiscing quis tincidunt gravida quis purus ultricies. Et non mattis sapien sit hendrerit hendrerit. Tellus tristique elementum sit amet tellus vulputate interdum facilisi bibendum. Nunc duis libero duis tincidunt. Curabitur mus consectetur ultricies integer venenatis in ac. Massa gravida suspendisse tincidunt pharetra lobortis risus odio pretium sagittis. Tristique velit elementum sagittis nunc sit ante ante dui. Sed eu sed porttitor tristique nunc leo lacus feugiat. Urna risus quisque amet semper venenatis justo eget. Integer ultricies maecenas velit lectus nulla donec. Gravida lorem facilisis imperdiet nisi. Libero dolor iaculis sed in consectetur scelerisque ullamcorper ultricies amet. Eget aliquam nisi leo turpis ut bibendum amet. Vitae id ut lobortis mattis ipsum sagittis. Purus vestibulum non malesuada ultrices consequat eget eu. Vitae odio aliquet in diam accumsan consequat aliquet egestas varius. Ut diam eu in leo. In sit suspendisse sagittis sollicitudin sagittis id imperdiet. Facilisis sem neque lectus purus dictumst nulla lectus sed.</p>`
-            }
-          ]
-        }
-      ]
+      categories: []
+    }
+  },
+  mounted () {
+    if (!this.videoCourseData || this.videoCourseData?.length === 0) {
+      this.getVideoCourse()
     }
   },
   computed: {
@@ -156,17 +77,42 @@ export default {
     isMediumScreen () {
       return this.$q.screen.width <= 750
     },
-    videoCourseStore () {
-      return useVideoCourseStore()
+    courseStore () {
+      return useCourseStore()
+    },
+    videoCourseData () {
+      return this.courseStore.videoCourse
+    },
+    authStore () {
+      return useAuthStore()
+    },
+    globalStore () {
+      return useGlobalStore()
     }
   },
   methods: {
+    getVideoCourse () {
+      return new Promise((resolve, reject) => {
+        this.globalStore.SET_DATA({ key: 'isLoading', data: true })
+        this.courseStore
+          .getVideoCourse()
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+          .finally(() => {
+            this.globalStore.SET_DATA({ key: 'isLoading', data: false })
+          })
+      })
+    },
     handleDetail (item) {
       const payload = {
         key: 'selectedVideoCourse',
         data: item
       }
-      this.videoCourseStore.SET_DATA(payload)
+      this.courseStore.SET_DATA(payload)
       this.$router.push({ name: 'VideoCourseDetailPage' })
     }
   }
@@ -217,10 +163,10 @@ export default {
 }
 .custom-card-description {
   font-weight: 400;
-  font-size: 12px;
+  font-size: 10px;
   color: #a5a5a5;
   @media (min-width: 500px) {
-    font-size: 14px !important;
+    font-size: 12px !important;
   }
 }
 </style>

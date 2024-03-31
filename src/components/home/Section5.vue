@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-container">
+  <div class="custom-container" v-if="quizData?.length">
     <div class="text-center row justify-center">
       <p class="custom-title">Q&A</p>
     </div>
@@ -13,7 +13,7 @@
             ? 'width: 49%'
             : 'width: 24%'
         "
-        v-for="(item, index) in questionList"
+        v-for="(item, index) in quizData"
         :key="index"
       >
         <p class="custom-card-title">{{ item?.question }}</p>
@@ -24,52 +24,13 @@
 </template>
 
 <script>
+import { useGlobalStore } from 'src/stores/Global'
+
 export default {
   name: 'Section5Component',
-  data () {
-    return {
-      questionList: [
-        {
-          question: 'What is team reason for creating this website?',
-          answer:
-            'the reason we create this website is so that users can be facilitated in learning'
-        },
-        {
-          question: 'What is team reason for creating this website?',
-          answer:
-            'the reason we create this website is so that users can be facilitated in learning'
-        },
-        {
-          question: 'What is team reason for creating this website?',
-          answer:
-            'the reason we create this website is so that users can be facilitated in learning'
-        },
-        {
-          question: 'What is team reason for creating this website?',
-          answer:
-            'the reason we create this website is so that users can be facilitated in learning'
-        },
-        {
-          question: 'What is team reason for creating this website?',
-          answer:
-            'the reason we create this website is so that users can be facilitated in learning'
-        },
-        {
-          question: 'What is team reason for creating this website?',
-          answer:
-            'the reason we create this website is so that users can be facilitated in learning'
-        },
-        {
-          question: 'What is team reason for creating this website?',
-          answer:
-            'the reason we create this website is so that users can be facilitated in learning'
-        },
-        {
-          question: 'What is team reason for creating this website?',
-          answer:
-            'the reason we create this website is so that users can be facilitated in learning'
-        }
-      ]
+  mounted () {
+    if (!this.quizData || this.quizData?.length === 0) {
+      this.getQuiz()
     }
   },
   computed: {
@@ -81,6 +42,26 @@ export default {
     },
     isMediumScreen () {
       return this.$q.screen.width <= 750
+    },
+    globalStore () {
+      return useGlobalStore()
+    },
+    quizData () {
+      return this.globalStore.quiz
+    }
+  },
+  methods: {
+    getQuiz () {
+      return new Promise((resolve, reject) => {
+        this.globalStore
+          .getQuiz()
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
     }
   }
 }

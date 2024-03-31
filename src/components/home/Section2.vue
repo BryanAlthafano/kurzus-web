@@ -8,7 +8,15 @@
           materials you like.
         </p>
         <div>
-          <q-btn flat dense no-caps class="custom-btn">Get Started</q-btn>
+          <q-btn
+            flat
+            dense
+            no-caps
+            class="custom-btn"
+            @click="$router.push('/course')"
+          >
+            Get Started
+          </q-btn>
         </div>
       </div>
     </div>

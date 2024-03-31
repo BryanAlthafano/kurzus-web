@@ -2,7 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-header class="custom-header" elevated>
       <q-toolbar class="row justify-between">
-        <div>
+        <div class="col row">
           <div v-if="isSmallScreen">
             <q-btn
               flat
@@ -43,19 +43,26 @@
             </RouterLink>
           </div>
         </div>
-        <div class="self-center">
+        <div class="col row justify-center self-center">
           <q-img
+            @click="$router.replace('/')"
             no-spinner
             :src="`${url}icons/logokurzus.png`"
             alt="logokurzus"
-            style="width: 40px"
+            style="width: 40px; cursor: pointer"
           />
         </div>
-        <div class="self-center">
+        <div class="col row justify-end self-center">
           <div v-if="isLoggedIn">
-            <div class="custom-profile">
-              <p class="q-ma-none self-center">Robert</p>
-            </div>
+            <!-- <div class="custom-profile" style="cursor: pointer">
+              <p class="q-ma-none self-center">{{ getUserData?.username }}</p>
+            </div> -->
+            <CustomMenu
+              :type="'account'"
+              :label="getUserData?.username[0]"
+              :items="[{ title: 'Logout', icon: 'mdi-logout', key: 'logout' }]"
+              @update:modelValue="val => handleAccount(val.key)"
+            />
           </div>
           <div class="row self-center" style="gap: 12px" v-else>
             <q-btn
@@ -129,8 +136,12 @@
 </template>
 
 <script>
+import CustomMenu from 'src/components/common/CustomMenu.vue'
+import { useAuthStore } from 'src/stores/Auth'
+
 export default {
   name: 'MainLayout',
+  components: { CustomMenu },
   data () {
     return {
       isOpenDrawer: false
@@ -140,11 +151,25 @@ export default {
     url () {
       return window.location.href.split('#')[0]
     },
+    authStore () {
+      return useAuthStore()
+    },
     isLoggedIn () {
-      return false
+      return this.authStore.isLoggedIn
+    },
+    getUserData () {
+      return this.authStore.getUserData
     },
     isSmallScreen () {
       return this.$q.screen.width <= 500
+    }
+  },
+  methods: {
+    handleAccount (key) {
+      if (key === 'logout') {
+        this.authStore.CLEAR_DATA()
+        this.$router.replace('/')
+      }
     }
   }
 }
